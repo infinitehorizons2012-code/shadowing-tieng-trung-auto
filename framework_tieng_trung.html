@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Framework Học Tiếng Trung Giao Tiếp (Bản Đầy Đủ Hoàn Thiện)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 60px 30px;
+            background: linear-gradient(135deg, #1e1b4b, var(--primary), var(--secondary));
+            border-radius: 24px;
+            color: white;
+            box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 25s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .science-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--text-main);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            margin: 15px auto 0;
+            border-radius: 3px;
+        }
+
+        /* --- 3 Lớp Cốt Lõi Section --- */
+        .core-layers {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+        
+        .layer-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            width: calc(33.333% - 20px);
+            min-width: 280px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary);
+            position: relative;
+        }
+        
+        .layer-box:nth-child(2) { border-color: var(--accent); }
+        .layer-box:nth-child(3) { border-color: var(--success); }
+        
+        .layer-icon { font-size: 3rem; margin-bottom: 15px; }
+        .layer-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; }
+
+        /* --- Breakthrough Rules --- */
+        .breakthrough-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 70px;
+            flex-wrap: wrap;
+        }
+
+        .bt-card {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bt-card::after {
+            content: '💡';
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+
+        .bt-card.light {
+            background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+            color: #0f766e;
+        }
+        .bt-card.light::after { content: '🎯'; }
+
+        .bt-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; }
+
+        /* --- Principles Section --- */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 70px;
+        }
+
+        .principle-card {
+            background: var(--card-bg);
+            padding: 35px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .principle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            transform-origin: bottom;
+        }
+
+        .principle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .principle-card:hover::before { transform: scaleY(1); }
+
+        .principle-icon { font-size: 2.8rem; margin-bottom: 20px; display: inline-block; }
+        .principle-title { font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
+        .principle-desc { color: var(--text-muted); font-size: 1rem; flex-grow: 1; }
+
+        /* --- Psychological Traps Section --- */
+        .traps-container {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 24px;
+            padding: 50px 40px;
+            margin-bottom: 70px;
+            position: relative;
+        }
+        .traps-container h3 { color: var(--danger); text-align: center; font-size: 2rem; margin-bottom: 30px; }
+        .traps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .trap-item {
+            background: white; padding: 25px; border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(225, 29, 72, 0.05); border-left: 4px solid var(--danger);
+        }
+        .trap-item h4 { font-size: 1.2rem; margin-bottom: 10px; color: #881337; }
+
+        /* --- Cartoon vs Drama Section --- */
+        .cartoon-highlight {
+            background: white;
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 70px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .cartoon-highlight h3 { font-size: 2rem; color: #334155; margin-bottom: 25px; text-align: center; }
+        
+        .vs-container { display: flex; gap: 30px; margin-top: 30px; }
+        .vs-box { flex: 1; background: #f8fafc; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0;}
+        .vs-box.bad { border-top: 5px solid var(--danger); }
+        .vs-box.good { border-top: 5px solid var(--success); }
+        
+        .vs-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .bad .vs-title { color: var(--danger); }
+        .good .vs-title { color: var(--success); }
+        
+        .vs-list { list-style: none; }
+        .vs-list li { margin-bottom: 12px; padding-left: 25px; position: relative; font-size: 1.05rem; }
+        .bad .vs-list li::before { content: '❌'; position: absolute; left: 0; font-size: 0.9rem; }
+        .good .vs-list li::before { content: '✅'; position: absolute; left: 0; font-size: 0.9rem; }
+
+        /* --- Timeline Section (7 Steps) --- */
+        .timeline {
+            position: relative;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%; width: 2px; height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            transform: translateX(-50%); opacity: 0.3;
+        }
+
+        .timeline-item {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 50px; position: relative;
+        }
+
+        .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+
+        .timeline-content {
+            width: 45%; background: var(--card-bg); padding: 30px; border-radius: 20px;
+            box-shadow: 0 4px 10px -1px rgba(0, 0, 0, 0.05); border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: scale(1.03); box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light); z-index: 10;
+        }
+
+        .timeline-dot {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; position: absolute; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.4rem;
+            box-shadow: 0 0 0 6px var(--bg-color), 0 4px 10px rgba(0,0,0,0.15); z-index: 2;
+        }
+
+        .step-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+        .step-goal {
+            background: rgba(236, 72, 153, 0.1); color: var(--secondary);
+            padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; display: inline-block;
+        }
+        .step-desc { color: var(--text-muted); font-size: 1rem; }
+
+        /* --- Practical Scenario Section --- */
+        .practical-scenario {
+            background: linear-gradient(to right, #f0fdf4, #dcfce7);
+            border: 2px dashed #10b981;
+            border-radius: 24px;
+            padding: 50px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .practical-scenario.scenario-1 {
+            background: linear-gradient(to right, #fffbeb, #fef3c7);
+            border-color: #f59e0b;
+        }
+        .practical-scenario h3 { font-size: 1.8rem; margin-bottom: 20px; text-align: center; }
+        .scenario-1 h3 { color: #b45309; }
+        .practical-scenario.scenario-2 h3 { color: #047857; }
+        
+        .scenario-content {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;
+        }
+        .scenario-step {
+            background: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 15px;
+        }
+        .scenario-icon { font-size: 2rem; }
+        .scenario-text strong { display: block; font-size: 1.1rem; }
+        .scenario-1 .scenario-text strong { color: #d97706; }
+        .practical-scenario.scenario-2 .scenario-text strong { color: #059669; }
+        .scenario-text span { color: var(--text-muted); font-size: 0.95rem; }
+
+        .grammar-hack {
+            background: #1e293b; color: white; padding: 20px; border-radius: 12px; margin-top: 30px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .grammar-hack h4 { color: #38bdf8; margin-bottom: 5px; font-size: 1.1rem;}
+
+        /* --- AI Prompt Section --- */
+        .ai-prompt {
+            background: #1e293b; color: #f8fafc; padding: 40px; border-radius: 20px; margin-top: 70px;
+        }
+        .ai-prompt h3 { color: #38bdf8; margin-bottom: 20px; font-size: 1.6rem; display: flex; align-items: center; gap: 10px; }
+        .code-block {
+            background: #0f172a; padding: 25px; border-radius: 12px;
+            font-family: monospace; font-size: 1.1rem; border: 1px solid #334155; line-height: 1.8;
+            color: #a5b4fc; white-space: pre-wrap;
+        }
+
+        .quote-box {
+            background: linear-gradient(to right, rgba(79, 70, 229, 0.05), transparent);
+            border-left: 5px solid var(--primary); padding: 30px; border-radius: 0 16px 16px 0; margin-top: 70px;
+            font-style: italic; color: var(--text-main); font-size: 1.2rem; font-weight: 500; line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .timeline::before { left: 30px; }
+            .timeline-item, .timeline-item:nth-child(even) { flex-direction: column; align-items: flex-start; padding-left: 80px; }
+            .timeline-content { width: 100%; }
+            .timeline-dot { left: 30px; width: 40px; height: 40px; font-size: 1.1rem; }
+            h1 { font-size: 2.2rem; }
+            .layer-box { width: 100%; }
+            .vs-container { flex-direction: column; }
+            .scenario-content { grid-template-columns: 1fr; }
+        }
+        /* --- Grammar Map Section --- */
+        .grammar-map {
+            margin-bottom: 70px;
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .grammar-card {
+            background: #f8fafc;
+            border-left: 5px solid var(--primary);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+        .grammar-card h4 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .formula-box {
+            background: #1e293b;
+            color: #38bdf8;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 15px 0;
+            letter-spacing: 1px;
+        }
+        .formula-box span { color: #f8fafc; }
+        .grammar-card.orange { border-left-color: var(--accent); }
+        .grammar-card.orange h4 { color: #d97706; }
+        .grammar-card.orange .formula-box { color: #fbbf24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Framework Học Tiếng Trung Giao Tiếp (Bản Đầy Đủ)</h1>
+        <p class="subtitle">Đừng phức tạp hóa việc học. Sự tiến bộ thực sự đến từ: Đầu vào dễ hiểu + Dám mở miệng + Được sửa lỗi.</p>
+        <div class="science-badge">🧬 Dựa trên Lý thuyết Comprehensible Input của GS. Stephen Krashen</div>
+    </header>
+
+    <div class="breakthrough-container">
+        <div class="bt-card">
+            <div class="bt-title">Sự thật 1: Ngữ pháp tiếng Trung RẤT DỄ!</div>
+            <p>Mọi người nói tiếng Trung khó vì sợ chữ Hán. Nhưng về mặt giao tiếp, tiếng Trung <strong>không có chia động từ phức tạp</strong>, <strong>không phân biệt giống đực/cái</strong> như tiếng Anh hay Pháp. Cấu trúc của nó thực chất cực kỳ đơn giản và logic.</p>
+        </div>
+        <div class="bt-card light">
+            <div class="bt-title">Sự thật 2: Bạn chỉ cần 2.500 từ cốt lõi</div>
+            <p>Đừng ép bản thân học hàng ngàn từ vựng luyện thi vô nghĩa. Khoa học chứng minh bạn <strong>chỉ cần thành thạo 2.500 từ vựng cốt lõi</strong> là đã có thể hiểu được <strong>hơn 95%</strong> các cuộc hội thoại trong cuộc sống hàng ngày.</p>
+        </div>
+        <div class="bt-card" style="background: linear-gradient(135deg, #fffbeb, #fef3c7); color: #92400e; border: 1px solid #fde68a;">
+            <div class="bt-title">Sự thật 3: Lợi thế "Lego" của người Việt</div>
+            <p>Bạn không học từ số 0! Tiếng Việt chia sẻ <strong>60% từ vựng Hán-Việt</strong> và chung tư duy ngữ pháp với tiếng Trung. Khác với người phương Tây, bạn chỉ cần "Copy & Paste" âm thanh. Hãy coi từ vựng như những khối Lego, khi bạn nhận ra quy luật tương đồng (VD: Gia Đình -> Jiātíng), bạn sẽ ráp được cả Vạn Lý Trường Thành ngôn ngữ siêu nhanh!</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">3 Lớp Cốt Lõi Của Việc Học Ngôn Ngữ</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Hàng ngàn khóa học hay phương pháp rốt cuộc chỉ xoay quanh 3 lớp bản chất này:</p>
+    <div class="core-layers">
+        <div class="layer-box">
+            <div class="layer-icon">🎧</div>
+            <h3 class="layer-title">1. Đầu Vào Dễ Hiểu</h3>
+            <p class="text-muted">Bạn có tiếp thu đủ âm thanh không? Bạn có hiểu được những gì mình đang nghe/xem không?</p>
+        </div>
+        <div class="layer-box">
+            <div class="layer-icon">🗣️</div>
+            <h3 class="layer-title">2. Đầu Ra Tự Tin</h3>
+            <p class="text-muted">Bạn có dám chuyển những gì mình hiểu thành câu nói của riêng mình để giao tiếp không?</p>
+        </div>
+        <div class="layer-box">
+            <div class="layer-icon">🔧</div>
+            <h3 class="layer-title">3. Vòng Lặp Sửa Lỗi</h3>
+            <p class="text-muted">Khi bạn nói sai, có ai phát hiện và sửa cho bạn không? Sự trưởng thành nằm ở khoảnh khắc sửa lỗi.</p>
+        </div>
+    </div>
+
+    <div class="diu-container" style="background: #fff; border-radius: 24px; padding: 40px; margin-bottom: 70px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h2 class="section-title" style="margin-top: 0; margin-bottom: 10px;">Tại sao bạn "Nghe kém"? Mô hình D.I.U</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px;">Khi bạn không hiểu người bản xứ, đừng vội kết luận "Tôi nghe kém". Quá trình nghe thực chất đi qua 3 giai đoạn (D.I.U). Hầu hết mọi người bỏ qua giai đoạn 1 và 2, rồi thất vọng ở giai đoạn 3.</p>
+        
+        <div class="timeline" style="margin-bottom: 0;">
+            <div class="timeline-item">
+                <div class="timeline-dot" style="background: var(--primary);">D</div>
+                <div class="timeline-content">
+                    <h3 class="step-title">Distinguish (Phân biệt)</h3>
+                    <div class="step-goal" style="color: var(--primary);">Mục tiêu: Đếm được số từ và nghe được nhịp điệu</div>
+                    <p class="step-desc">Khi nghe một ngôn ngữ xa lạ, bạn thậm chí không biết câu đó có mấy từ. Ở giai đoạn này, não bộ đang học cách phân tách âm thanh thành các "khối" riêng biệt và bắt nhịp với tốc độ của tiếng Trung.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot" style="background: var(--accent);">I</div>
+                <div class="timeline-content">
+                    <h3 class="step-title">Identify (Nhận diện)</h3>
+                    <div class="step-goal" style="color: var(--accent);">Mục tiêu: Bóc tách chính xác cấu trúc âm thanh (Pinyin)</div>
+                    <p class="step-desc">Bạn nghe rõ mồn một các âm thanh (VD: "zhǎo dào") dù bạn chưa hề biết nghĩa. Việc nhận diện âm thanh này là bước bản lề bắt buộc để bạn có thể tra cứu từ điển và nạp từ vựng mới.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot" style="background: #10b981;">U</div>
+                <div class="timeline-content">
+                    <h3 class="step-title">Understand (Hiểu)</h3>
+                    <div class="step-goal" style="color: #10b981;">Mục tiêu: Nối âm thanh với hình ảnh/khái niệm thực tế</div>
+                    <p class="step-desc">Giai đoạn cuối cùng. Âm thanh lập tức gọi ra một hình ảnh trong đầu bạn (nghe "Píngguǒ" -> thấy quả Táo) mà không hề có sự xuất hiện của thao tác dịch sang tiếng mẹ đẻ.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="traps-container">
+        <h3>🚨 3 Cái Bẫy Tâm Lý Khiến Bạn Mãi Dậm Chân Tại Chỗ</h3>
+        <p style="text-align: center; color: #9f1239; margin-bottom: 30px;">Việc học thuộc lòng 50 từ/ngày chỉ tạo ra trí nhớ ngắn hạn. Bạn sẽ quên sạch vào hôm sau. Chúng ta thường dùng các cách học vẹt này để trốn tránh sự kém cỏi.</p>
+        <div class="traps-grid">
+            <div class="trap-item">
+                <h4>Tránh tự phản tỉnh</h4>
+                <p>Thừa nhận "tôi không hiểu" hoặc "tôi không nói được" rất đau đớn. Thay vì đối mặt với điểm yếu, chúng ta đi tìm mua khóa học mới, phương pháp mới để trốn tránh thực tại.</p>
+            </div>
+            <div class="trap-item">
+                <h4>Ảo tưởng an toàn từ hệ thống</h4>
+                <p>Đăng ký lớp học, ngồi nghe giảng, chép bài mang lại "cảm giác an toàn" giả tạo. Nhưng sự an toàn không đồng nghĩa với việc bạn có thể giao tiếp được.</p>
+            </div>
+            <div class="trap-item">
+                <h4>Sợ bị người khác bắt lỗi</h4>
+                <p>Tiến bộ = liên tục mắc lỗi và sửa sai. Nhưng bản năng con người ghét bị chỉ trích. Việc cứ mãi ngồi học từ vựng mà không dám mở miệng là biểu hiện của nỗi sợ bị sai.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">5 Nguyên Tắc Tư Duy (Mindset)</h2>
+    <div class="principles-grid">
+        <div class="principle-card">
+            <span class="principle-icon">🔄</span>
+            <h3 class="principle-title">1. Trình Tự Tự Nhiên</h3>
+            <p class="principle-desc">Người bản xứ học theo thứ tự: <strong>Nghe -> Nói -> Đọc -> Viết</strong>. Ngôn ngữ không phải thứ để học thuộc lòng, mà là thứ để bạn "hòa mình vào".</p>
+        </div>
+        <div class="principle-card">
+            <span class="principle-icon">🌱</span>
+            <h3 class="principle-title">2. Nguyên Lý Hạt Giống</h3>
+            <p class="principle-desc">Tập trung tuyệt đối vào 2.500 từ vựng cốt lõi (những từ rễ như ăn, uống, đi, đứng). <em>(VD: Lửa + Mũi Tên = Tên Lửa)</em>.</p>
+        </div>
+        <div class="principle-card">
+            <span class="principle-icon">🎯</span>
+            <h3 class="principle-title">3. Tính Gần Gũi</h3>
+            <p class="principle-desc">Chỉ học những gì gần gũi nhất với bản thân. Bắt đầu từ cảm giác thể chất và môi trường xung quanh bạn mỗi ngày.</p>
+        </div>
+        <div class="principle-card">
+            <span class="principle-icon">🛠️</span>
+            <h3 class="principle-title">4. Học Qua Hành Động (TPR)</h3>
+            <p class="principle-desc">Cơ thể bạn có trí nhớ tốt hơn não bộ. Khi bạn thực hiện hành động (như mở cửa, đứng lên), hãy nói từ đó ra. Việc này khóa chặt từ vựng vào tiềm thức.</p>
+        </div>
+        <div class="principle-card">
+            <span class="principle-icon">🧠</span>
+            <h3 class="principle-title">5. Hiểu Trước, Nhớ Sau</h3>
+            <p class="principle-desc">Bỏ qua bước "Dịch ngầm". Phải kết nối trực tiếp âm thanh với hình ảnh và hành động. <em>(Nghe "Táo" -> Thấy quả Táo -> Hiểu ngay)</em>.</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">Bản Đồ Từ Vựng: 5 Mô Hình Lắp Ráp</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Từ vựng tiếng Trung không ngẫu nhiên. Chúng được "thiết kế" cực kỳ logic theo 5 bản thiết kế (blueprints) cốt lõi. Hãy ngừng học thuộc và bắt đầu <strong>Lắp Ráp</strong>!</p>
+    
+    <div class="grammar-map">
+        <div class="grammar-card">
+            <h4>🥪 1. Hành Động + Đối Tượng (Từ Ly Hợp - Separable Sandwich)</h4>
+            <p>Hợp nhất Động từ và Danh từ. Vì bản chất là "Hành động + Đối tượng" nên bạn có thể <strong>"ly hợp" (tách ra)</strong> để chèn từ khác vào giữa như một chiếc bánh kẹp (sandwich).</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li><strong>Ăn cơm (吃饭):</strong> Ăn (Hành động) + Cơm (Đối tượng).</li>
+                <li>👉 <em>Tuyệt chiêu kẹp:</em> Ăn <strong>một bữa</strong> cơm (吃 <strong>了一顿</strong> 饭). Chữ "một bữa" được kẹp vào giữa!</li>
+            </ul>
+        </div>
+        <div class="grammar-card orange">
+            <h4>🧱 2. Mô hình Lego Cơ Bản</h4>
+            <p>Kết hợp 2 đồ vật/hiện tượng khác nhau để tạo ra từ mới trực quan.</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li><strong>Núi lửa (火山):</strong> Lửa + Núi.</li>
+                <li><strong>Xe lửa (火车):</strong> Lửa + Xe.</li>
+            </ul>
+        </div>
+        <div class="grammar-card">
+            <h4>🤝 3. Mô hình Đồng Đội (Từ ghép Song song)</h4>
+            <p>Ghép 2 từ có <strong>ý nghĩa tương đương</strong> để tạo ra khái niệm bao quát.</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li><strong>Quần áo (衣服):</strong> Áo (Y) + Quần (Phục) = Trang phục.</li>
+                <li><strong>Bạn bè (朋友):</strong> Bạn (Bằng) + Bạn (Hữu) = Bằng hữu / Bạn bè.</li>
+            </ul>
+        </div>
+        <div class="grammar-card orange">
+            <h4>🪜 4. Mô hình Từng Bước (Hành động + Kết quả)</h4>
+            <p>Hành động A dẫn đến Kết quả B. Áp dụng tuyệt chiêu <strong>Cây Cầu (Bridge Block)</strong> để nói khả năng: chèn chữ 得 (được) hoặc 不 (không) vào giữa!</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li><strong>Nghe hiểu (听懂):</strong> Nghe (Hành động) + Hiểu (Kết quả).</li>
+                <li>👉 <em>Tuyệt chiêu Cây cầu:</em> Nghe <strong>được</strong> hiểu (听 <strong>得</strong> 懂) / Nghe <strong>không</strong> hiểu (听 <strong>不</strong> 懂).</li>
+            </ul>
+        </div>
+        <div class="grammar-card">
+            <h4>📦 5. Mô hình Câu Thu Nhỏ (Mini-sentence)</h4>
+            <p>Bản thân từ vựng chứa một câu hoàn chỉnh (Chủ ngữ + Tính từ/Động từ).</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li><strong>Đau đầu (头痛):</strong> Đầu (Chủ ngữ) + Đau (Tính từ) = Bệnh đau đầu.</li>
+                <li><strong>Động đất (地震):</strong> Đất (Chủ ngữ) + Chấn động (Động từ) = Động đất.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 class="section-title">Bản Đồ Ngữ Pháp "Không Cần Học Thuộc"</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Tiếng Trung là một trong những ngôn ngữ logic nhất thế giới. Bạn không cần chia động từ, chỉ cần nắm vững 2 quy luật xếp hình này:</p>
+    
+    <div class="grammar-map">
+        <div class="grammar-card">
+            <h4>🎬 Quy luật 1: Mô hình Đạo Diễn Phim (STPVO)</h4>
+            <p>Tiếng Anh cho phép bạn đổi chỗ thời gian và địa điểm tùy ý. Nhưng trong tiếng Trung, hãy tưởng tượng bạn là một đạo diễn phim. Trước khi diễn (Hành động), bạn phải set up xong Thời gian và Bối cảnh!</p>
+            <div class="formula-box">Ai (Chủ ngữ) + <span>Khi nào (Thời gian)</span> + Ở đâu (Địa điểm) + <span>Làm gì (Động từ)</span> + Cái gì (Tân ngữ)</div>
+            <p><strong>Ví dụ:</strong> Hôm qua tôi đọc sách ở nhà.</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>❌ <em>Sai (kiểu tiếng Anh):</em> Tôi đọc sách ở nhà hôm qua.</li>
+                <li>✅ <em>Đúng (Logic tiếng Trung):</em> Tôi -> Hôm qua -> Ở nhà -> Đọc -> Sách.</li>
+            </ul>
+        </div>
+
+        <div class="grammar-card orange">
+            <h4>🔗 Quy luật 2: Dòng Thời Gian Thực Tế (Chuỗi Hành Động)</h4>
+            <p>Tiếng Anh có vô số "từ ma" (to, by, with, in order to) để nối các động từ. Tiếng Trung KHÔNG CÓ những từ này. Bạn chỉ cần liệt kê các hành động theo <strong>đúng thứ tự chúng xảy ra trong đời thực</strong>.</p>
+            <div class="formula-box">Hành động 1 + <span>Hành động 2</span> + Hành động 3</div>
+            <p><strong>Ví dụ 1:</strong> Tôi dùng đũa để ăn.</p>
+            <ul style="list-style-type: none; margin-top: 10px; margin-bottom: 15px;">
+                <li>✅ <em>Tiếng Trung:</em> Tôi -> Dùng đũa -> Ăn cơm. (Cầm đũa trước, rồi mới ăn).</li>
+            </ul>
+            <p><strong>Ví dụ 2:</strong> Tôi bay đến Trung Quốc để thăm bạn.</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>✅ <em>Tiếng Trung:</em> Tôi -> Đi máy bay -> Đến TQ -> Thăm bạn. (Đúng y như một cuốn phim tua theo thời gian).</li>
+            </ul>
+        </div>
+
+        <div class="grammar-card">
+            <h4>🎥 Quy luật 3: Cấu trúc 把 (ba) - Đạo diễn chuyển góc máy</h4>
+            <p>Khi một hành động tạo ra <strong>sự thay đổi hoặc kết quả</strong> lên một đồ vật, người bản xứ không dùng cấu trúc phẳng (Tôi ăn cơm). Thay vào đó, họ dùng chữ <strong>把 (bǎ - đem/lấy)</strong> để "chuyển góc máy quay" từ người làm sang vật bị tác động (Tôi đem cơm ăn hết).</p>
+            <div class="formula-box">Ai + <span>把 (đem/lấy) + Cái gì</span> + Làm sao (kết quả)</div>
+            <p><strong>Ví dụ:</strong> Tôi để cuốn sách lên bàn.</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>❌ <em>Chưa chuẩn:</em> Tôi để cuốn sách. (Đạo diễn quay cảnh bạn đang để đồ).</li>
+                <li>✅ <em>Đúng (Cấu trúc 把):</em> Tôi <strong>đem</strong> (把) cuốn sách để lên bàn rồi. (Đạo diễn hô "Cắt!", góc máy chuyển từ bạn sang hệ quả của Cuốn Sách).</li>
+            </ul>
+        </div>
+        
+        <div class="grammar-card orange">
+            <h4>🧲 Quy luật 4: Nam Châm Rút Ngắn (Cấu trúc 就 - Jiu)</h4>
+            <p>Từ <strong>就 (jiù - thì, liền, chính là)</strong> xuất hiện trong 90% câu tiếng Trung. Đừng cố dịch nó thành 20 nghĩa tiếng Việt/Anh khác nhau, hãy coi nó là một "Nam châm" rút ngắn khoảng cách!</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>⏱️ <strong>Nam châm Thời gian:</strong> Diễn tả hành động xảy ra ngay lập tức, nhanh hơn, sớm hơn dự kiến. <em>(Tôi <strong>liền/ngay lập tức (就)</strong> đi)</em>.</li>
+                <li>🔗 <strong>Khóa Logic (Nếu... Thì):</strong> Rút ngắn khoảng cách giữa Điều kiện và Kết quả. <em>(Nếu bạn thích, <strong>thì (就)</strong> mua đi)</em>.</li>
+                <li>🎯 <strong>Nhấn mạnh (Chính là/Chỉ là):</strong> Thu hẹp các lựa chọn lại thành duy nhất. <em>(Tôi <strong>chỉ (就)</strong> có 1 người)</em>.</li>
+            </ul>
+        </div>
+
+        <div class="grammar-card" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 4px solid #22c55e; margin-top: 20px;">
+            <h4>🎵 Quy luật 5: Nhịp Điệu Cảm Xúc (Sentence Patterns)</h4>
+            <p>Để câu nói không bị cứng nhắc như rô-bốt hay "Google Dịch", người bản xứ dùng các <strong>khuôn mẫu nhịp điệu</strong> để tạo sự trôi chảy (flow) và nhấn nhá cảm xúc:</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>📈 <strong>Hiệu ứng Tăng tiến:</strong> Dùng <strong>越来越</strong> (yuè lái yuè - Càng ngày càng) + Tính/Động từ. Rất gọn gàng, tạo ngay nhịp điệu 3 âm tiết mượt mà. <em>(Ví dụ: Càng ngày càng đẹp)</em>.</li>
+                <li>🎭 <strong>Hiệu ứng Drama (Plot Twist):</strong> Dùng <strong>不但... 而且...</strong> (búdàn... érqiě... - Không những... mà còn). Giống như một kịch bản phim, khi người nghe tưởng câu nói đã kết thúc, bạn "bẻ lái" để chèn thêm một cú sốc hoặc thông tin đắt giá.</li>
+            </ul>
+        </div>
+
+        <div class="grammar-card" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6; margin-top: 20px;">
+            <h4>🧠 Quy luật 6: Thuật Toán Hình Thanh (Nhớ chữ Hán trong 15s)</h4>
+            <p>Thay vì chép phạt hàng ngàn giờ để nhớ từng nét chữ, hãy áp dụng "Thuật toán 3000 năm" của người bản xứ. Hơn 80% chữ Hán được cấu tạo theo công thức:</p>
+            <div class="formula-box" style="margin: 15px 0;">Thành phần NGHĨA (Gợi ý ý nghĩa) + Thành phần ÂM (Gợi ý cách đọc) = Chữ mới</div>
+            <p><strong>Ví dụ:</strong> Để tạo ra chữ <strong>Hà (河 - dòng sông, đọc là 'hé')</strong>:</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>💧 <strong>Phần Nghĩa:</strong> Lấy bộ Thủy (氵) để chỉ nó liên quan tới nước.</li>
+                <li>🗣️ <strong>Phần Âm:</strong> Lấy chữ Khả (可) vì nó mượn âm thanh gần giống để tạo ra âm 'hé'.</li>
+            </ul>
+            <p style="margin-top: 10px; font-weight: bold; color: #1d4ed8;">Nắm được thuật toán này, bạn không còn phải "học vẹt" nét chữ nữa, việc học chữ Hán thực chất chỉ là lắp ráp các khối Lego Nghĩa - Âm lại với nhau!</p>
+        </div>
+
+        <div class="grammar-card" style="background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border-left: 4px solid #c026d3; margin-top: 20px;">
+            <h4>❓ Quy luật 7: Đặt Câu Hỏi Bằng Cách "Rút Gạch Lego"</h4>
+            <p>Trong tiếng Anh hay tiếng Việt, khi đặt câu hỏi, chúng ta thường phải đảo ngữ hoặc thêm từ để hỏi ở đầu/cuối câu (Ví dụ: <em>"Bạn mua cái này <strong>ở đâu?</strong>"</em>). Nhưng tiếng Trung thì không!</p>
+            <p>Trở lại với Quy luật 1 (Mô hình S.T.P.V.O). Tiếng Trung giữ <strong>nguyên xi trật tự câu</strong>, bạn muốn hỏi về thông tin nào, chỉ cần "rút viên gạch đó ra" và thay bằng từ để hỏi:</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>👤 <strong>Hỏi Người (Ai?):</strong> Rút gạch [Subject], thay bằng <strong>谁 (shéi)</strong>.</li>
+                <li>⏱️ <strong>Hỏi Thời gian (Khi nào?):</strong> Rút gạch [Time], thay bằng <strong>什么时候 (shénme shíhòu)</strong>.</li>
+                <li>📍 <strong>Hỏi Địa điểm (Ở đâu?):</strong> Rút gạch [Place], thay bằng <strong>哪儿 (nǎ'er)</strong>.</li>
+            </ul>
+            <p style="margin-top: 10px; font-weight: bold; color: #a21caf;">Ví dụ: Câu gốc: "Tôi (S) hôm qua (T) ở nhà (P) ăn (V) cơm (O)".<br>Hỏi: "Tôi hôm qua <strong>Ở ĐÂU</strong> ăn cơm?" -> Cứ rút đúng viên gạch Place ra để hỏi, trật tự câu KHÔNG BAO GIỜ thay đổi!</p>
+        </div>
+
+        <div class="grammar-card" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 4px solid #d97706; margin-top: 20px;">
+            <h4>🎁 Kho Báu Bổ Sung: 4 Hack Ngữ Pháp Nhanh</h4>
+            <p>Tuyệt chiêu từ các cao thủ giúp câu tiếng Trung của bạn tự nhiên 100% và tiết kiệm hàng ngàn giờ học vẹt:</p>
+            <ul style="list-style-type: none; margin-top: 10px;">
+                <li>❌ <strong>Tính từ KHÔNG đi với "Là" (是):</strong> Đừng dịch word-by-word "He is tall" thành "Anh ấy LÀ cao". Tiếng Trung lấy chữ <strong>Rất (很 - hěn)</strong> làm cầu nối: "Anh ấy <strong>RẤT</strong> cao" (Tā hěn gāo). Dù không có ý nhấn mạnh mức độ "rất", người bản xứ vẫn dùng nó như một từ nối bắt buộc thay cho động từ to-be.</li>
+                <li>🏃 <strong>Công thức Trạng từ (-ly):</strong> Trong tiếng Anh thêm đuôi "-ly" (happy -> happily). Tiếng Trung chỉ cần thêm chữ <strong>地 (de)</strong> vào sau Tính từ và ném nó ra <em>TRƯỚC</em> Động từ. Ví dụ: Vui vẻ + 地 + Chạy = Chạy một cách vui vẻ. Rất gọn gàng!</li>
+                <li>🎵 <strong>Hack Thanh Điệu:</strong> Thanh điệu không phải là sự sắp xếp ngẫu nhiên. Đặc biệt nếu bạn biết âm Hán Việt (hoặc tiếng Quảng Đông), có một sự ánh xạ quy luật rõ ràng 1-1 để đoán cực chuẩn thanh điệu trong tiếng phổ thông mà không cần học vẹt.</li>
+                <li>🧪 <strong>Bằng chứng Bảng Tuần Hoàn & Cambridge:</strong> Tại sao người nước ngoài mới học qua được bài test Cambridge khó nhằn trong khi người bản xứ đôi khi lại rớt? Vì người mới dùng <em>tư duy phân tích (Pattern recognition)</em> thay vì học vẹt nét vẽ. Bằng chứng vĩ đại nhất: Bảng tuần hoàn hóa học! Khi dịch bảng tuần hoàn, học giả Trung Quốc đã dùng đúng "Thuật toán Hình Thanh" (Quy luật 6): Khí Helium = Bộ Khí (气 - trạng thái khí) + Chữ Hợi (亥 - để mượn âm đọc là 'he'). Nhìn cấu tạo là lập tức biết tính chất và cách đọc!</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="cartoon-highlight">
+        <h3>📺 Công Cụ Tối Thượng: Sức Mạnh Của Phim Hoạt Hình</h3>
+        <p style="text-align: center; color: #334155; font-size: 1.1rem; margin-bottom: 30px;">
+            Hầu hết người lớn thất bại khi rèn luyện "Đầu vào dễ hiểu" vì chọn sai tài liệu. Hãy xem sự khác biệt:
+        </p>
+        
+        <div class="vs-container">
+            <div class="vs-box bad">
+                <div class="vs-title">Cái Bẫy: Phim Truyền Hình (Drama)</div>
+                <ul class="vs-list">
+                    <li><strong>Lời thoại quá nhanh</strong> và phức tạp.</li>
+                    <li><strong>Âm thanh KHÔNG khớp hình ảnh:</strong> Hai người ngồi uống trà nhưng lại đang nói về một vụ án. Bạn không thể dựa vào hình ảnh để đoán từ vựng.</li>
+                    <li><strong>Quá trình học bị sai lệch:</strong> Nghe -> Đọc phụ đề -> Dịch sang tiếng mẹ đẻ -> Mới hiểu. Khiến não bộ bị "lag" khi nghe ngoài đời thực.</li>
+                </ul>
+            </div>
+            
+            <div class="vs-box good">
+                <div class="vs-title">Chân Ái: Phim Hoạt Hình Trẻ Em</div>
+                <ul class="vs-list">
+                    <li><strong>Logic ngôn ngữ phát triển dần đều:</strong> Đi từ đồ vật/hành động cơ bản (ăn, uống) đến cảm xúc trừu tượng (vui vẻ, thú vị).</li>
+                    <li><strong>Âm thanh ĐỒNG BỘ tuyệt đối với hình ảnh:</strong> Nhân vật nói "Quả táo", màn hình hiện quả táo. Nói "Cuộc thi", màn hình hiện cảnh thi chạy.</li>
+                    <li><strong>Học như một đứa trẻ:</strong> Không cần sách vở, không cần ngữ pháp. Bạn nghe, nhìn ngữ cảnh và "Hiểu" ngay lập tức không cần dịch.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">7 Bước Hành Động Thực Tế</h2>
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-dot">1</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Tìm "Cha mẹ" tiếng Trung (AI)</h3>
+                <div class="step-goal">Mục tiêu: Môi trường an toàn để sửa lỗi</div>
+                <p class="step-desc">Dùng AI đóng vai người bản xứ để trò chuyện. Bạn có thể sai thoải mái mà không sợ quê, và AI sẽ liên tục sửa lỗi cho bạn – đây chính là Lớp cốt lõi thứ 3.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot">2</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Tạo âm thanh nền (Nghe trước)</h3>
+                <div class="step-goal">Mục tiêu: Nạp Đầu Vào (Lớp cốt lõi 1)</div>
+                <p class="step-desc">Nghe Vlog, âm nhạc khi làm việc nhà. Trẻ con nghe 1-2 năm mới nói. Hãy để tai quen với nhịp điệu tiếng Trung.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot">3</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Học qua hành động (TPR)</h3>
+                <div class="step-goal">Mục tiêu: Khóa từ vựng bằng cơ thể</div>
+                <p class="step-desc">Khi bạn làm một hành động thực tế (như mở tủ lạnh, đứng lên, ngồi xuống), hãy kết hợp nói từ đó bằng tiếng Trung. Hãy chú ý khẩu hình và ngữ điệu để bắt chước.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot">4</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Chấp nhận sự mơ hồ</h3>
+                <div class="step-goal">Mục tiêu: Vượt qua sợ hãi mắc lỗi</div>
+                <p class="step-desc">Chỉ tập trung vào 2.500 từ cốt lõi. Cốt lõi là truyền đạt được thông tin. Đừng chờ nắm vững ngữ pháp hay hiểu 80% mới dám mở miệng.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot">5</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Cày Phim Hoạt Hình Trẻ Em</h3>
+                <div class="step-goal">Mục tiêu: Hiểu không cần dịch</div>
+                <p class="step-desc">Hãy cày các bộ phim hoạt hình với độ khó tăng dần. Đây là nguồn <strong>"Đầu vào dễ hiểu"</strong> tốt nhất để kết nối trực tiếp âm thanh với hình ảnh thực tế mà không cần từ điển.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot">6</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Quét bối cảnh</h3>
+                <div class="step-goal">Mục tiêu: Mở rộng vốn từ thực tế</div>
+                <p class="step-desc">Khi đến không gian mới (siêu thị, quán cafe), hãy tự mô tả không gian đó bằng tiếng Trung trong đầu.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot">7</div>
+            <div class="timeline-content">
+                <h3 class="step-title">Nghĩ bằng tiếng Trung</h3>
+                <div class="step-goal">Mục tiêu: Cắt bỏ dịch ngầm</div>
+                <p class="step-desc">Nhìn thấy quả táo -> nghĩ ngay "quả táo" bằng tiếng Trung. Kết nối trực tiếp âm thanh và hình ảnh.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Hệ Thống Kịch Bản Thực Chiến</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">Hãy biến mọi nơi bạn đi qua thành lớp học. Dưới đây là 2 kịch bản mẫu áp dụng Bước 3 (Học qua hành động) và Bước 6 (Quét bối cảnh).</p>
+
+    <!-- Kịch bản 1: Không gian kín -->
+    <div class="practical-scenario scenario-1">
+        <h3>🎬 Kịch Bản 1: Không Gian Kín (Phòng tắm & Đi ngủ)</h3>
+        <p style="text-align: center; color: #78350f; margin-bottom: 25px;">Tập trung vào hành động cá nhân (Học qua hành động TPR) kết hợp vật dụng thân thuộc.</p>
+        
+        <div class="scenario-content">
+            <div class="scenario-step">
+                <div class="scenario-icon">🪞</div>
+                <div class="scenario-text">
+                    <strong>Đứng trước gương</strong>
+                    <span>Nhìn vào gương nói từ "Gương". Thấy bàn chải, kem đánh răng thì gọi tên chúng. Cầm bàn chải lên nói "Tôi đang đánh răng".</span>
+                </div>
+            </div>
+            <div class="scenario-step">
+                <div class="scenario-icon">🚰</div>
+                <div class="scenario-text">
+                    <strong>Mở vòi nước</strong>
+                    <span>Vặn vòi nước nóng nói "Nước nóng" (Đỏ), vặn lạnh nói "Nước lạnh" (Xanh). Hành động vặn đi kèm từ "Mở vòi nước".</span>
+                </div>
+            </div>
+            <div class="scenario-step">
+                <div class="scenario-icon">🧖‍♀️</div>
+                <div class="scenario-text">
+                    <strong>Rửa mặt & Lau khô</strong>
+                    <span>Tát nước lên mặt nói "Rửa mặt", cảm nhận nước nói "Ướt". Cầm khăn lên nói "Khăn tắm" rồi lau mặt và nói "Khô".</span>
+                </div>
+            </div>
+            <div class="scenario-step">
+                <div class="scenario-icon">🛏️</div>
+                <div class="scenario-text">
+                    <strong>Lên giường & Tắt đèn</strong>
+                    <span>Chạm vào chăn, ga, gối và gọi tên. Nằm xuống giường nói "Đi ngủ". Tắt đèn và nói "Chúc ngủ ngon!".</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kịch bản 2: Không gian mở -->
+    <div class="practical-scenario scenario-2">
+        <h3>🎬 Kịch Bản 2: Không Gian Mở (Đi dạo Công viên)</h3>
+        <p style="text-align: center; color: #064e3b; margin-bottom: 25px;">Tập trung vào quan sát vạn vật (Quét bối cảnh) và cảm nhận không gian, thời gian.</p>
+        
+        <div class="scenario-content">
+            <div class="scenario-step">
+                <div class="scenario-icon">🌤️</div>
+                <div class="scenario-text">
+                    <strong>Quan sát thời tiết</strong>
+                    <span>Nhìn lên trời, thấy nắng chói mắt nói "Nắng". Thấy mây trắng bay nói "Mây trắng". Thấy bầu trời nói "Bầu trời xanh".</span>
+                </div>
+            </div>
+            <div class="scenario-step">
+                <div class="scenario-icon">🌳</div>
+                <div class="scenario-text">
+                    <strong>Định danh sự vật</strong>
+                    <span>Vừa đi dạo vừa chỉ vào các sự vật và gọi tên: "Cây", "Cỏ xanh", "Hồ nước", "Ghế đá", "Thùng rác", "Con chó".</span>
+                </div>
+            </div>
+            <div class="scenario-step">
+                <div class="scenario-icon">🚶</div>
+                <div class="scenario-text">
+                    <strong>Mô tả hành động đang xảy ra</strong>
+                    <span>Thấy người quét rác nói "Dọn dẹp". Thấy người dắt chó nói "Đi dạo". Thấy người tập thể dục nói "Phòng tập". Khi bước lên bậc thềm nói "Lên cầu thang".</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grammar-hack">
+            <div style="font-size: 2.5rem;">⏱️</div>
+            <div>
+                <h4>Bí kíp "Hack" Ngữ pháp: Cách dùng Thì (Tenses) cực dễ</h4>
+                <p style="font-size: 0.95rem; margin-top: 5px;">Trong tiếng Trung, động từ KHÔNG BAO GIỜ bị chia theo thời gian (giống tiếng Việt). Bạn muốn nói về thời gian nào, chỉ cần ghép <strong>"Mốc thời gian" + "Hành động"</strong>. Ví dụ khi ở công viên: 
+                <br>- <em>Hôm nay</em> tôi đi công viên (Hiện tại)
+                <br>- <em>Hôm qua</em> tôi đi công viên (Quá khứ)
+                <br>- <em>Ngày mai</em> tôi đi công viên (Tương lai)</p>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Phồn thể & Giản thể -->
+    <div class="practical-scenario" style="background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%); border-left: 5px solid #d946ef; margin-bottom: 40px;">
+        <h3 style="color: #86198f;">☯️ Bí Kíp Đọc Hiểu Giản Thể & Phồn Thể (Cross Literacy)</h3>
+        <p style="text-align: center; color: #701a75; margin-bottom: 25px;">Chữ Giản thể không phải là một ngôn ngữ mới, nó chỉ là một bộ quy tắc rút gọn từ Phồn thể.</p>
+        <div style="font-size: 1.1rem; color: #4a044e; line-height: 1.7;">
+            <p><strong>Bí mật:</strong> Khoảng 75% chữ Giản thể hoàn toàn GIỐNG Phồn thể. 25% còn lại được đơn giản hóa dựa trên một hệ thống quy tắc (patterns) lặp đi lặp lại rất nhất quán.</p>
+            <p>Thay vì học thuộc 2 bộ chữ, hãy rèn luyện <strong>kỹ năng nhận diện mẫu (Pattern Recognition)</strong>. Ví dụ:</p>
+            <ul style="margin-top: 10px; padding-left: 20px;">
+                <li>Khi bộ Ngôn <strong>訁</strong> (Phồn thể) chuyển thành <strong>讠</strong> (Giản thể), quy luật này áp dụng cho hàng trăm chữ khác nhau (Ví dụ: 說 -> 说, 話 -> 话).</li>
+            </ul>
+            <p style="margin-top: 10px;">Chỉ cần nắm được một vài quy luật rút gọn bộ thủ, bạn có thể dễ dàng đoán và hiểu được cả 2 hệ thống chữ viết!</p>
+        </div>
+    </div>
+
+    <div class="ai-prompt">
+        <h3>🤖 Bí kíp: Dùng AI làm "Cha Mẹ" sửa lỗi</h3>
+        <p style="margin-bottom: 20px; font-size: 1.1rem; color: #cbd5e1;">Thay vì lo sợ nói sai bị chê cười, hãy dùng prompt (câu lệnh) sau đây với ChatGPT/Gemini để có người luyện tập và sửa lỗi 24/7:</p>
+        <div class="code-block">"Tôi muốn luyện tập tiếng Trung. Bây giờ chúng ta hãy đóng vai: bạn là chủ nhà hàng, tôi là khách đến gọi món. 
+        
+Hãy trả lời tôi bằng tiếng Trung đơn giản nhất. Đặc biệt lưu ý: Nếu tôi nói sai ngữ pháp hoặc dùng từ chưa tự nhiên, hãy lập tức chỉ ra lỗi sai và sửa lại giúp tôi trước khi trả lời câu chuyện nhé!"</div>
+    </div>
+
+    <div class="quote-box">
+        "Ngôn ngữ không phải thứ để bạn học thuộc lòng, mà là thứ bạn phải hòa mình vào. Việc học thuộc từ vựng chỉ tạo ra trí nhớ ngắn hạn. Hãy liên tục tiếp xúc với đầu vào dễ hiểu trong ngữ cảnh, và một ngày bạn sẽ tự nhiên giao tiếp được."
+    </div>
+
+</div>
+
+</body>
+</html>
