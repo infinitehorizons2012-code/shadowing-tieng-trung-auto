@@ -66,6 +66,8 @@ if __name__ == "__main__":
         new_seg = {
             "id": seg.get("id"),
             "text": seg.get("chinese", ""),
+            "start": seg.get("start", 0),
+            "end": seg.get("end", 0),
             "pinyin": pinyin_list[idx],
             "vietnamese": translations[idx] if idx < len(translations) else "",
             "jieba_segmentation": jieba_list[idx]
