@@ -8,62 +8,71 @@ Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
 # 1. Cài đặt các thư viện cần thiết
-!pip install funasr modelscope torch torchaudio hanlp
+!pip install funasr modelscope torch torchaudio hanlp yt-dlp gdown
 
 import os
 import json
-import urllib.request
+import gdown
 from funasr import AutoModel
 import hanlp
 from google.colab import drive
 
-# 2. Kết nối Google Drive để lưu file đầu ra
+# 2. Kết nối Google Drive
 drive.mount('/content/drive')
 
-# 3. Tải video (thay thế URL bằng link video thực tế của bạn)
-VIDEO_URL = "LINK_VIDEO_CUA_BAN_O_DAY"
-VIDEO_FILENAME = "video.mp4"
-if VIDEO_URL != "LINK_VIDEO_CUA_BAN_O_DAY":
-    print("Downloading video...")
-    urllib.request.urlretrieve(VIDEO_URL, VIDEO_FILENAME)
+# 3. Tải video từ Link và lưu vĩnh viễn vào Google Drive
+# Dán link video của bạn vào đây (Hỗ trợ Youtube, Bilibili, TikTok, Facebook, hoặc link Google Drive)
+VIDEO_URL = "DÁN_LINK_VIDEO_CỦA_BẠN_VÀO_ĐÂY"
+VIDEO_FILENAME = "/content/drive/MyDrive/video_shadowing.mp4"
 
-# 4. Chạy FunASR (Bóc băng & mốc thời gian)
-print("Running FunASR...")
-asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
-asr_res = asr_model.generate(input=VIDEO_FILENAME)
+print("Đang tải video về Google Drive...")
+if "drive.google.com" in VIDEO_URL:
+    # Nếu là link Google Drive, dùng gdown
+    gdown.download(VIDEO_URL, VIDEO_FILENAME, fuzzy=True)
+else:
+    # Nếu là link Youtube/Bilibili/Tiktok..., dùng yt-dlp
+    os.system(f'yt-dlp -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4" -o "{VIDEO_FILENAME}" "{VIDEO_URL}"')
 
-# 5. Chạy HanLP (Phân tích ngữ pháp)
-print("Loading HanLP...")
-# Tải mô hình đa tác vụ chuẩn của HanLP
-HanLP = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
+if not os.path.exists(VIDEO_FILENAME):
+    print("LỖI: Tải video thất bại. Xin hãy kiểm tra lại link!")
+else:
+    print(f"Đã tải xong video và lưu vào: {VIDEO_FILENAME}")
+    
+    # 4. Chạy FunASR (Bóc băng & mốc thời gian)
+    print("Running FunASR...")
+    asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
+    asr_res = asr_model.generate(input=VIDEO_FILENAME)
 
-print("Analyzing syntax...")
-gpu_analysis_data = []
+    # 5. Chạy HanLP (Phân tích ngữ pháp)
+    print("Loading HanLP...")
+    HanLP = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
 
-# Trích xuất dữ liệu từ kết quả FunASR (ASR trả về list các dict)
-if isinstance(asr_res, list) and len(asr_res) > 0:
-    for idx, item in enumerate(asr_res):
-        text = item.get("text", "")
-        if text:
-            # Phân tích bằng HanLP
-            doc = HanLP(text)
-            
-            segment_data = {
-                "id": idx,
-                "chinese": text,
-                "hanlp_analysis": {
-                    "tokens": doc.get('tok/fine', []),
-                    "pos_tags": doc.get('pos/ctb', []),
-                    "dependency": doc.get('dep', [])
+    print("Analyzing syntax...")
+    gpu_analysis_data = []
+
+    # Trích xuất dữ liệu từ kết quả FunASR
+    if isinstance(asr_res, list) and len(asr_res) > 0:
+        for idx, item in enumerate(asr_res):
+            text = item.get("text", "")
+            if text:
+                doc = HanLP(text)
+                
+                segment_data = {
+                    "id": idx,
+                    "chinese": text,
+                    "hanlp_analysis": {
+                        "tokens": doc.get('tok/fine', []),
+                        "pos_tags": doc.get('pos/ctb', []),
+                        "dependency": doc.get('dep', [])
+                    }
                 }
-            }
-            gpu_analysis_data.append(segment_data)
+                gpu_analysis_data.append(segment_data)
 
-# 6. Lưu file vào Google Drive của bạn
-OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
-with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-    json.dump(gpu_analysis_data, f, ensure_ascii=False, indent=2)
+    # 6. Lưu file vào Google Drive
+    OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(gpu_analysis_data, f, ensure_ascii=False, indent=2)
 
-print(f"XONG! File đã được lưu tại: {OUTPUT_PATH}")
-print("Hãy lấy file gpu_analysis.json này chia sẻ dạng link (Bất kỳ ai có liên kết) và dán vào ô input của GitHub Actions nhé!")
+    print(f"XONG! File đã được lưu tại: {OUTPUT_PATH}")
+    print("Hãy vào Drive, lấy file gpu_analysis.json chia sẻ dạng 'Bất kỳ ai có liên kết' và dán vào ô input của GitHub Actions nhé!")
 ```
