@@ -29,6 +29,19 @@ def compile_html():
     else:
         # Fallback if no head tag is found
         html_content = data_script + html_content
+        
+    # Monkey-patch the React app's hardcoded mock data to use window.LESSON_DATA
+    start_idx = html_content.find('JSON.parse(`[{"id":0')
+    if start_idx != -1:
+        end_idx = html_content.find(']`)', start_idx)
+        if end_idx != -1:
+            mock_data_str = html_content[start_idx:end_idx+3]
+            # Replace the hardcoded parse with a check for our injected data
+            replacement = f"(window.LESSON_DATA && window.LESSON_DATA.analysis ? window.LESSON_DATA.analysis : {mock_data_str})"
+            html_content = html_content.replace(mock_data_str, replacement)
+    else:
+        # Fallback if no head tag is found
+        html_content = data_script + html_content
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
