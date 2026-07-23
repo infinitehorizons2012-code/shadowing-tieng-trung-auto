@@ -6,6 +6,11 @@
 1. Mở một [Google Colab](https://colab.research.google.com/) mới.
 2. Hãy chắc chắn bạn vào menu **Runtime > Change runtime type > Chọn T4 GPU**.
 
+⚠️ **LƯU Ý CỰC KỲ QUAN TRỌNG ĐỂ SỬA LỖI NUMPY / IMPORTERROR:**
+Khi chạy cài đặt thư viện (`!pip install`), Colab có thể tải về phiên bản `numpy` mới gây xung đột hệ thống. Nếu bạn thấy báo lỗi chữ đỏ (như `ImportError: cannot import name... numpy...`), bạn **BẮT BUỘC** phải làm theo 2 bước sau:
+1. Vào thanh Menu phía trên cùng, chọn **Runtime (Thời gian chạy)** -> **Restart session (Khởi động lại phiên)**.
+2. Sau khi Colab khởi động lại xong, bạn bấm nút **Play chạy lại đoạn code đó một lần nữa**. Lần này chắc chắn 100% sẽ thành công!
+
 ---
 
 ### Chạy mã nguồn
