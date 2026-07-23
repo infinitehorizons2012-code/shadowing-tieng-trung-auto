@@ -10,13 +10,21 @@ Sau khi dán và chạy đoạn code ở dưới xong, nếu gặp lỗi `Attrib
 Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
-# 1. Cài đặt các thư viện cần thiết (Ép bản transformers 4.32.0 để sửa lỗi HanLP)
-!pip install transformers==4.32.0 funasr modelscope torch torchaudio hanlp yt-dlp gdown
+# 1. Cài đặt các thư viện cần thiết
+!pip install funasr modelscope torch torchaudio hanlp yt-dlp gdown
 
 import os
 import json
 import gdown
 from funasr import AutoModel
+import transformers
+
+# Vá lỗi (Monkey patch) cho transformers bản mới (Bị thiếu hàm encode_plus mà HanLP cần)
+if not hasattr(transformers.PreTrainedTokenizerBase, 'encode_plus'):
+    transformers.PreTrainedTokenizerBase.encode_plus = transformers.PreTrainedTokenizerBase.__call__
+if getattr(transformers, 'BertTokenizer', None) and not hasattr(transformers.BertTokenizer, 'encode_plus'):
+    transformers.BertTokenizer.encode_plus = transformers.BertTokenizer.__call__
+
 import hanlp
 from google.colab import drive
 
