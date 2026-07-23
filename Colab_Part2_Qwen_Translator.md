@@ -107,28 +107,35 @@ Bắt buộc dùng ngoặc kép (") cho key và string.
 }}"""
     
     messages = [
-        {"role": "system", "content": "You are a professional Chinese linguistic analyst. Always output strictly valid JSON."},
+        {"role": "system", "content": "You are a professional Chinese linguistic analyst. Always output strictly valid JSON. Never truncate the output. Use double quotes for all keys and string values."},
         {"role": "user", "content": prompt}
     ]
     
     text_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer([text_prompt], return_tensors="pt").to(model.device)
     
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=1024,
-        temperature=0.3,
-        do_sample=True
-    )
-    
-    # Lấy phần chữ do AI sinh ra (bỏ qua phần prompt)
-    generated_text = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
-    
-    parsed_data = parse_json_from_output(generated_text)
-    
+    parsed_data = None
+    for attempt in range(3):
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=2048,
+            temperature=0.3,
+            do_sample=True,
+            pad_token_id=tokenizer.eos_token_id
+        )
+        
+        # Lấy phần chữ do AI sinh ra (bỏ qua phần prompt)
+        generated_text = tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True)
+        
+        parsed_data = parse_json_from_output(generated_text)
+        if parsed_data:
+            break
+        else:
+            print(f"  -> Lỗi JSON ở lần thử {attempt + 1}. Đang thử lại...")
+            
     if not parsed_data:
         parsed_data = {
-            "vietnamese": "Lỗi AI xuất định dạng",
+            "vietnamese": "Lỗi AI không xuất được JSON hợp lệ sau 3 lần thử",
             "han_nom": "Lỗi",
             "grammar": "Lỗi",
             "words": []
