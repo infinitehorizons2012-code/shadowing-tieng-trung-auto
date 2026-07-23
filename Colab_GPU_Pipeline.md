@@ -42,28 +42,29 @@ else:
     asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
     asr_res = asr_model.generate(input=VIDEO_FILENAME)
 
-    print("Đang định dạng và tách câu dữ liệu...")
-    import re
+    print("Đang bóc tách mốc thời gian...")
     gpu_analysis_data = []
 
-    # Trích xuất dữ liệu từ kết quả FunASR
     if isinstance(asr_res, list) and len(asr_res) > 0:
-        for item in asr_res:
-            full_text = item.get("text", "")
-            if full_text:
-                # Tách thành từng câu dựa trên dấu câu tiếng Trung (。！？)
-                # Dùng regex để tách nhưng giữ lại dấu câu
-                sentences = re.split(r'(?<=[。！？!?])', full_text)
-                
-                # Loại bỏ các chuỗi rỗng hoặc chỉ chứa khoảng trắng
-                sentences = [s.strip() for s in sentences if s.strip()]
-                
-                for idx, sentence in enumerate(sentences):
+        res_dict = asr_res[0]
+        if "sentence_info" in res_dict:
+            for idx, seg in enumerate(res_dict["sentence_info"]):
+                text = seg.get("text", "").strip()
+                if text:
                     segment_data = {
                         "id": idx,
-                        "chinese": sentence
+                        "chinese": text,
+                        "start": seg.get("start", 0) / 1000.0,
+                        "end": seg.get("end", 0) / 1000.0
                     }
                     gpu_analysis_data.append(segment_data)
+        else:
+            # Fallback
+            import re
+            full_text = res_dict.get("text", "")
+            sentences = [s.strip() for s in re.split(r'(?<=[。！？!?])', full_text) if s.strip()]
+            for idx, sentence in enumerate(sentences):
+                gpu_analysis_data.append({"id": idx, "chinese": sentence})
 
     # 5. Lưu file vào Google Drive
     OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
