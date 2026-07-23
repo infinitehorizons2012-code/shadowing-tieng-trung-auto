@@ -36,22 +36,34 @@ Hãy trả về DUY NHẤT một chuỗi JSON hợp lệ với cấu trúc sau, 
     ]
 }}"""
     try:
-        response = await client.chat.completions.create(
-            model="deepseek-chat",
-            messages=[
-                {"role": "system", "content": "You are a professional Chinese linguistic analyst. Always output valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3,
-            response_format={"type": "json_object"}
-        )
-        content = response.choices[0].message.content
-        data = json.loads(content)
-        return data
+        for attempt in range(3):
+            try:
+                response = await client.chat.completions.create(
+                    model="deepseek-chat",
+                    messages=[
+                        {"role": "system", "content": "You are a professional Chinese linguistic analyst. Always output valid JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.3
+                )
+                content = response.choices[0].message.content.strip()
+                if content.startswith("```json"):
+                    content = content[7:]
+                if content.startswith("```"):
+                    content = content[3:]
+                if content.endswith("```"):
+                    content = content[:-3]
+                content = content.strip()
+                data = json.loads(content)
+                return data
+            except Exception as e:
+                if attempt == 2:
+                    raise e
+                await asyncio.sleep(2)
     except Exception as e:
         print(f"Error processing segment {seg.get('id')}: {e}")
         return {
-            "vietnamese": "Lỗi dịch thuật",
+            "vietnamese": f"Lỗi: {type(e).__name__} - {str(e)[:50]}",
             "han_nom": "Lỗi phân tích",
             "grammar": "Lỗi phân tích",
             "words": []
@@ -59,7 +71,7 @@ Hãy trả về DUY NHẤT một chuỗi JSON hợp lệ với cấu trúc sau, 
 
 async def process_all(segments, api_key):
     client = AsyncOpenAI(api_key=api_key, base_url="https://api.deepseek.com/v1")
-    sem = asyncio.Semaphore(10) # 10 concurrent requests to avoid rate limits
+    sem = asyncio.Semaphore(3) # Reduce to 3 concurrent requests to avoid rate limits
     
     async def bounded_process(seg):
         async with sem:
