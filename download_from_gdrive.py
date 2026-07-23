@@ -21,7 +21,7 @@ if __name__ == "__main__":
     file_id = extract_file_id(gdrive_link)
     print(f"Attempting to download public GDrive file ID: {file_id}")
     
-    output = "gpu_analysis.json"
+    output = "linguistic_analysis.json"
     # Using gdown to download public google drive file
     download_url = f'https://drive.google.com/uc?id={file_id}'
     gdown.download(download_url, output, quiet=False)
