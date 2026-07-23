@@ -40,7 +40,7 @@ else:
     # 4. Chạy FunASR (Bóc băng & mốc thời gian)
     print("Running FunASR...")
     asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
-    asr_res = asr_model.generate(input=VIDEO_FILENAME)
+    asr_res = asr_model.generate(input=VIDEO_FILENAME, batch_size_s=300, sentence_timestamp=True)
 
     print("Đang bóc tách mốc thời gian...")
     gpu_analysis_data = []
@@ -59,12 +59,41 @@ else:
                     }
                     gpu_analysis_data.append(segment_data)
         else:
-            # Fallback
+            # Fallback to character-level timestamps if sentence_info is missing
             import re
             full_text = res_dict.get("text", "")
+            char_timestamps = res_dict.get("timestamp", [])
             sentences = [s.strip() for s in re.split(r'(?<=[。！？!?])', full_text) if s.strip()]
+            
+            char_idx = 0
             for idx, sentence in enumerate(sentences):
-                gpu_analysis_data.append({"id": idx, "chinese": sentence})
+                # Calculate how many valid characters are in this sentence (ignoring spaces/punctuation if needed)
+                # FunASR timestamps typically align with the text including punctuation.
+                s_len = len(sentence)
+                
+                start_time = 0.0
+                end_time = 0.0
+                
+                if char_idx < len(char_timestamps):
+                    start_time = char_timestamps[char_idx][0] / 1000.0
+                    
+                char_idx += s_len
+                
+                if char_idx - 1 < len(char_timestamps) and char_idx > 0:
+                    end_time = char_timestamps[char_idx - 1][1] / 1000.0
+                elif len(char_timestamps) > 0:
+                    end_time = char_timestamps[-1][1] / 1000.0
+                else:
+                    # Absolute fallback
+                    start_time = idx * 2.0
+                    end_time = idx * 2.0 + 2.0
+                    
+                gpu_analysis_data.append({
+                    "id": idx, 
+                    "chinese": sentence,
+                    "start": start_time,
+                    "end": end_time
+                })
 
     # 5. Lưu file vào Google Drive
     OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
