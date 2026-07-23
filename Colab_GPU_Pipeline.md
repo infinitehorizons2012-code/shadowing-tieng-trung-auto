@@ -7,8 +7,8 @@ Hãy chắc chắn bạn vào menu **Runtime > Change runtime type > Chọn T4 G
 Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
-# 1. Cài đặt các thư viện cần thiết
-!pip install funasr modelscope torch torchaudio hanlp yt-dlp gdown
+# 1. Cài đặt các thư viện cần thiết (Ép bản transformers cũ để sửa lỗi HanLP)
+!pip install transformers==4.38.2 funasr modelscope torch torchaudio hanlp yt-dlp gdown
 
 import os
 import json
