@@ -61,13 +61,19 @@ if __name__ == "__main__":
         translations = [""] * len(sentences)
         
     # 4. Merge Data
+    final_segments = []
     for idx, seg in enumerate(segments):
-        seg["pinyin"] = pinyin_list[idx]
-        seg["vietnamese"] = translations[idx] if idx < len(translations) else ""
-        seg["jieba_segmentation"] = jieba_list[idx]
+        new_seg = {
+            "id": seg.get("id"),
+            "text": seg.get("chinese", ""),
+            "pinyin": pinyin_list[idx],
+            "vietnamese": translations[idx] if idx < len(translations) else "",
+            "jieba_segmentation": jieba_list[idx]
+        }
+        final_segments.append(new_seg)
         
     # Save output for the compiler
     with open("linguistic_analysis.json", "w", encoding="utf-8") as f:
-        json.dump(segments, f, ensure_ascii=False, indent=2)
+        json.dump(final_segments, f, ensure_ascii=False, indent=2)
         
     print("Saved linguistic_analysis.json")
