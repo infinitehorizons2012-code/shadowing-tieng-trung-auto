@@ -42,19 +42,28 @@ else:
     asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
     asr_res = asr_model.generate(input=VIDEO_FILENAME)
 
-    print("Đang định dạng dữ liệu...")
+    print("Đang định dạng và tách câu dữ liệu...")
+    import re
     gpu_analysis_data = []
 
     # Trích xuất dữ liệu từ kết quả FunASR
     if isinstance(asr_res, list) and len(asr_res) > 0:
-        for idx, item in enumerate(asr_res):
-            text = item.get("text", "")
-            if text:
-                segment_data = {
-                    "id": idx,
-                    "chinese": text
-                }
-                gpu_analysis_data.append(segment_data)
+        for item in asr_res:
+            full_text = item.get("text", "")
+            if full_text:
+                # Tách thành từng câu dựa trên dấu câu tiếng Trung (。！？)
+                # Dùng regex để tách nhưng giữ lại dấu câu
+                sentences = re.split(r'(?<=[。！？!?])', full_text)
+                
+                # Loại bỏ các chuỗi rỗng hoặc chỉ chứa khoảng trắng
+                sentences = [s.strip() for s in sentences if s.strip()]
+                
+                for idx, sentence in enumerate(sentences):
+                    segment_data = {
+                        "id": idx,
+                        "chinese": sentence
+                    }
+                    gpu_analysis_data.append(segment_data)
 
     # 5. Lưu file vào Google Drive
     OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
