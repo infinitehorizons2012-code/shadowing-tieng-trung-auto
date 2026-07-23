@@ -11,37 +11,25 @@ Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
 # 1. Cài đặt các thư viện cần thiết
-!pip install funasr modelscope torch torchaudio hanlp yt-dlp gdown
+!pip install funasr modelscope torch torchaudio yt-dlp gdown
 
 import os
 import json
 import gdown
 from funasr import AutoModel
-import transformers
-
-# Vá lỗi (Monkey patch) cho transformers bản mới (Bị thiếu hàm encode_plus mà HanLP cần)
-if not hasattr(transformers.PreTrainedTokenizerBase, 'encode_plus'):
-    transformers.PreTrainedTokenizerBase.encode_plus = transformers.PreTrainedTokenizerBase.__call__
-if getattr(transformers, 'BertTokenizer', None) and not hasattr(transformers.BertTokenizer, 'encode_plus'):
-    transformers.BertTokenizer.encode_plus = transformers.BertTokenizer.__call__
-
-import hanlp
 from google.colab import drive
 
 # 2. Kết nối Google Drive
 drive.mount('/content/drive')
 
 # 3. Tải video từ Link và lưu vĩnh viễn vào Google Drive
-# Dán link video của bạn vào đây (Hỗ trợ Youtube, Bilibili, TikTok, Facebook, hoặc link Google Drive)
 VIDEO_URL = "DÁN_LINK_VIDEO_CỦA_BẠN_VÀO_ĐÂY"
 VIDEO_FILENAME = "/content/drive/MyDrive/video_shadowing.mp4"
 
 print("Đang tải video về Google Drive...")
 if "drive.google.com" in VIDEO_URL:
-    # Nếu là link Google Drive, dùng gdown
     gdown.download(VIDEO_URL, VIDEO_FILENAME, fuzzy=True)
 else:
-    # Nếu là link Youtube/Bilibili/Tiktok..., dùng yt-dlp
     os.system(f'yt-dlp -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4" -o "{VIDEO_FILENAME}" "{VIDEO_URL}"')
 
 if not os.path.exists(VIDEO_FILENAME):
@@ -54,11 +42,7 @@ else:
     asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
     asr_res = asr_model.generate(input=VIDEO_FILENAME)
 
-    # 5. Chạy HanLP (Phân tích ngữ pháp)
-    print("Loading HanLP...")
-    HanLP = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
-
-    print("Analyzing syntax...")
+    print("Đang định dạng dữ liệu...")
     gpu_analysis_data = []
 
     # Trích xuất dữ liệu từ kết quả FunASR
@@ -66,20 +50,13 @@ else:
         for idx, item in enumerate(asr_res):
             text = item.get("text", "")
             if text:
-                doc = HanLP(text)
-                
                 segment_data = {
                     "id": idx,
-                    "chinese": text,
-                    "hanlp_analysis": {
-                        "tokens": doc.get('tok/fine', []),
-                        "pos_tags": doc.get('pos/ctb', []),
-                        "dependency": doc.get('dep', [])
-                    }
+                    "chinese": text
                 }
                 gpu_analysis_data.append(segment_data)
 
-    # 6. Lưu file vào Google Drive
+    # 5. Lưu file vào Google Drive
     OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         json.dump(gpu_analysis_data, f, ensure_ascii=False, indent=2)
