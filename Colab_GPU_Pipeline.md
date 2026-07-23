@@ -4,11 +4,14 @@
 
 Hãy chắc chắn bạn vào menu **Runtime > Change runtime type > Chọn T4 GPU** trước khi chạy.
 
+⚠️ **LƯU Ý CỰC KỲ QUAN TRỌNG ĐỂ SỬA LỖI BERTTOKENIZER:**
+Sau khi dán và chạy đoạn code ở dưới xong, nếu gặp lỗi `AttributeError: BertTokenizer has no attribute encode_plus`, bạn **BẮT BUỘC** phải vào Menu **Runtime (Thời gian chạy)** -> Chọn **Restart session (Khởi động lại phiên)**. Sau đó bấm chạy lại đoạn code một lần nữa thì mới thành công (do Colab cần xóa thư viện lỗi khỏi bộ nhớ).
+
 Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
-# 1. Cài đặt các thư viện cần thiết (Ép bản transformers cũ để sửa lỗi HanLP)
-!pip install transformers==4.38.2 funasr modelscope torch torchaudio hanlp yt-dlp gdown
+# 1. Cài đặt các thư viện cần thiết (Ép bản transformers 4.32.0 để sửa lỗi HanLP)
+!pip install transformers==4.32.0 funasr modelscope torch torchaudio hanlp yt-dlp gdown
 
 import os
 import json
