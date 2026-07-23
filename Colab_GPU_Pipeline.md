@@ -1,8 +1,8 @@
-# Hướng dẫn chạy Phần 1 trên Google Colab (Mô hình GPU nặng)
+# Hướng dẫn chạy Phần 1 trên Google Colab (Bóc băng FunASR - Hỗ trợ CPU)
 
-Để đảm bảo hiệu năng và tốc độ cho FunASR và HanLP, bạn hãy mở [Google Colab](https://colab.research.google.com/) và tạo một sổ tay (Notebook) mới.
+Để bóc băng tiếng Trung bằng FunASR, bạn hãy mở [Google Colab](https://colab.research.google.com/) và tạo một sổ tay (Notebook) mới.
 
-Hãy chắc chắn bạn vào menu **Runtime > Change runtime type > Chọn T4 GPU** trước khi chạy.
+Bạn **không cần** phải bật GPU (có thể dùng CPU mặc định của Colab để tiết kiệm giới hạn sử dụng GPU cho Phần 2).
 
 ⚠️ **LƯU Ý CỰC KỲ QUAN TRỌNG ĐỂ SỬA LỖI BERTTOKENIZER:**
 Sau khi dán và chạy đoạn code ở dưới xong, nếu gặp lỗi `AttributeError: BertTokenizer has no attribute encode_plus`, bạn **BẮT BUỘC** phải vào Menu **Runtime (Thời gian chạy)** -> Chọn **Restart session (Khởi động lại phiên)**. Sau đó bấm chạy lại đoạn code một lần nữa thì mới thành công (do Colab cần xóa thư viện lỗi khỏi bộ nhớ).
@@ -37,9 +37,9 @@ if not os.path.exists(VIDEO_FILENAME):
 else:
     print(f"Đã tải xong video và lưu vào: {VIDEO_FILENAME}")
     
-    # 4. Chạy FunASR (Bóc băng & mốc thời gian)
-    print("Running FunASR...")
-    asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc")
+    # 4. Chạy FunASR (Bóc băng & mốc thời gian trên CPU)
+    print("Running FunASR on CPU...")
+    asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc", device="cpu")
     asr_res = asr_model.generate(input=VIDEO_FILENAME, batch_size_s=300, sentence_timestamp=True)
 
     print("Đang bóc tách mốc thời gian...")
@@ -101,5 +101,5 @@ else:
         json.dump(gpu_analysis_data, f, ensure_ascii=False, indent=2)
 
     print(f"XONG! File đã được lưu tại: {OUTPUT_PATH}")
-    print("Hãy vào Drive, lấy file gpu_analysis.json chia sẻ dạng 'Bất kỳ ai có liên kết' và dán vào ô input của GitHub Actions nhé!")
+    print("Bạn có thể tắt Notebook này và chuyển sang chạy Phần 2 (cần bật GPU T4) nhé!")
 ```
