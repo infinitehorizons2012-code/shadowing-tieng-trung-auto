@@ -39,9 +39,6 @@ def compile_html():
             # Replace the hardcoded parse with a check for our injected data
             replacement = f"(window.LESSON_DATA && window.LESSON_DATA.analysis ? window.LESSON_DATA.analysis : {mock_data_str})"
             html_content = html_content.replace(mock_data_str, replacement)
-    else:
-        # Fallback if no head tag is found
-        html_content = data_script + html_content
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
