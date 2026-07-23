@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          pip install pypinyin openai jieba google-api-python-client google-auth-httplib2 google-auth-oauthlib requests
+          pip install pypinyin openai jieba google-api-python-client google-auth-httplib2 google-auth-oauthlib requests gdown
 
       - name: 1. Download Analysis from Google Drive
         env:
