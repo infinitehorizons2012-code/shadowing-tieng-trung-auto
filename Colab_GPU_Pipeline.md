@@ -42,58 +42,68 @@ else:
     asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc", device="cpu")
     asr_res = asr_model.generate(input=VIDEO_FILENAME, batch_size_s=300, sentence_timestamp=True)
 
-    print("Đang bóc tách mốc thời gian...")
+    print("Đang bóc tách mốc thời gian và chia nhỏ câu...")
     gpu_analysis_data = []
 
     if isinstance(asr_res, list) and len(asr_res) > 0:
         res_dict = asr_res[0]
-        if "sentence_info" in res_dict:
-            for idx, seg in enumerate(res_dict["sentence_info"]):
-                text = seg.get("text", "").strip()
-                if text:
-                    segment_data = {
-                        "id": idx,
-                        "chinese": text,
-                        "start": seg.get("start", 0) / 1000.0,
-                        "end": seg.get("end", 0) / 1000.0
-                    }
-                    gpu_analysis_data.append(segment_data)
-        else:
-            # Fallback to character-level timestamps if sentence_info is missing
-            import re
-            full_text = res_dict.get("text", "")
-            char_timestamps = res_dict.get("timestamp", [])
-            sentences = [s.strip() for s in re.split(r'(?<=[。！？!?])', full_text) if s.strip()]
+        full_text = res_dict.get("text", "")
+        char_timestamps = res_dict.get("timestamp", [])
+        
+        # Các dấu câu để ngắt câu (Bao gồm dấu phẩy, chấm phẩy để câu ngắn hơn, hỗ trợ bôi vàng karaoke tốt hơn)
+        punctuation_marks = set("。！？!?;；，,、")
+        
+        sentences = []
+        current_sentence_text = ""
+        current_sentence_start = -1
+        current_sentence_end = -1
+        
+        ts_idx = 0
+        for char in full_text:
+            current_sentence_text += char
             
-            char_idx = 0
-            for idx, sentence in enumerate(sentences):
-                # Calculate how many valid characters are in this sentence (ignoring spaces/punctuation if needed)
-                # FunASR timestamps typically align with the text including punctuation.
-                s_len = len(sentence)
+            char_start = -1
+            char_end = -1
+            
+            # FunASR timestamp thường bỏ qua dấu câu, mỗi ký tự chữ/số sẽ tương ứng với 1 timestamp
+            if char not in punctuation_marks and char.strip() != "":
+                if ts_idx < len(char_timestamps):
+                    char_start = char_timestamps[ts_idx][0] / 1000.0
+                    char_end = char_timestamps[ts_idx][1] / 1000.0
+                    ts_idx += 1
+            
+            if current_sentence_start == -1 and char_start != -1:
+                current_sentence_start = char_start
+            if char_end != -1:
+                current_sentence_end = char_end
                 
-                start_time = 0.0
-                end_time = 0.0
+            # Ngắt câu khi gặp dấu câu
+            if char in punctuation_marks:
+                if current_sentence_text.strip():
+                    sentences.append({
+                        "chinese": current_sentence_text.strip(),
+                        "start": current_sentence_start if current_sentence_start != -1 else 0.0,
+                        "end": current_sentence_end if current_sentence_end != -1 else 0.0
+                    })
+                current_sentence_text = ""
+                current_sentence_start = -1
+                current_sentence_end = -1
                 
-                if char_idx < len(char_timestamps):
-                    start_time = char_timestamps[char_idx][0] / 1000.0
-                    
-                char_idx += s_len
-                
-                if char_idx - 1 < len(char_timestamps) and char_idx > 0:
-                    end_time = char_timestamps[char_idx - 1][1] / 1000.0
-                elif len(char_timestamps) > 0:
-                    end_time = char_timestamps[-1][1] / 1000.0
-                else:
-                    # Absolute fallback
-                    start_time = idx * 2.0
-                    end_time = idx * 2.0 + 2.0
-                    
-                gpu_analysis_data.append({
-                    "id": idx, 
-                    "chinese": sentence,
-                    "start": start_time,
-                    "end": end_time
-                })
+        # Thêm phần text còn sót lại nếu chưa có dấu câu kết thúc
+        if current_sentence_text.strip():
+            sentences.append({
+                "chinese": current_sentence_text.strip(),
+                "start": current_sentence_start if current_sentence_start != -1 else 0.0,
+                "end": current_sentence_end if current_sentence_end != -1 else 0.0
+            })
+            
+        for idx, s in enumerate(sentences):
+            gpu_analysis_data.append({
+                "id": idx,
+                "chinese": s["chinese"],
+                "start": round(s["start"], 3),
+                "end": round(s["end"], 3)
+            })
 
     # 5. Lưu file vào Google Drive
     OUTPUT_PATH = "/content/drive/MyDrive/gpu_analysis.json"
