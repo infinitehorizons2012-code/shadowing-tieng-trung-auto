@@ -19,12 +19,14 @@ Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
 # 1. Cài đặt các thư viện cần thiết
-!pip install -q transformers accelerate bitsandbytes pypinyin jieba gdown autoawq gptqmodel optimum
+!pip install -q transformers accelerate bitsandbytes pypinyin jieba gdown autoawq gptqmodel optimum hanlp ltp
 
 import os
 import json
 import re
 import jieba
+import hanlp
+from ltp import LTP
 import torch
 from pypinyin import pinyin, Style
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -74,6 +76,10 @@ def parse_json_from_output(content):
     except Exception as e:
         print(f"Lỗi phân tích JSON: {e}")
         return None
+
+print("Đang tải các mô hình phân tích ngôn ngữ (HanLP, LTP)...")
+ltp_model = LTP()
+hanlp_model = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH)
 
 final_segments = []
 
@@ -157,6 +163,25 @@ Bắt buộc dùng ngoặc kép (") cho key và string.
                 "variant": w.get("variant", "")
             }
         })
+    # Phân tích cú pháp bằng LTP
+    try:
+        ltp_seg, ltp_hidden = ltp_model.seg([text])
+        ltp_pos = ltp_model.pos(ltp_hidden)
+        ltp_dep = ltp_model.dep(ltp_hidden)
+        ltp_res = {
+            "seg": ltp_seg[0],
+            "pos": ltp_pos[0],
+            "dep": ltp_dep[0]
+        }
+    except Exception as e:
+        ltp_res = {"error": str(e)}
+        
+    # Phân tích đa tác vụ bằng HanLP
+    try:
+        doc = hanlp_model(text)
+        hanlp_res = doc.to_dict() if hasattr(doc, 'to_dict') else str(doc)
+    except Exception as e:
+        hanlp_res = {"error": str(e)}
         
     final_segments.append({
         "id": seg.get("id"),
@@ -168,7 +193,9 @@ Bắt buộc dùng ngoặc kép (") cho key và string.
         "han_nom": parsed_data.get("han_nom", ""),
         "grammar": parsed_data.get("grammar", ""),
         "words": formatted_words,
-        "jieba_segmentation": list(jieba.cut(text))
+        "jieba_analysis": list(jieba.cut(text)),
+        "ltp_analysis": ltp_res,
+        "hanlp_analysis": hanlp_res
     })
 
 # Lưu kết quả
