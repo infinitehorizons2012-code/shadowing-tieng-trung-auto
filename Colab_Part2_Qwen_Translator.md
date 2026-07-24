@@ -19,7 +19,7 @@ Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
 # 1. Cài đặt các thư viện cần thiết
-!pip install -q transformers accelerate bitsandbytes pypinyin jieba gdown autoawq gptqmodel optimum hanlp ltp
+!pip install -q transformers accelerate bitsandbytes pypinyin jieba gdown autoawq gptqmodel optimum hanlp ltp "numpy<2.0.0"
 
 import os
 import json
