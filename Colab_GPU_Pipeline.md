@@ -11,11 +11,14 @@ Tạo 1 cell và dán toàn bộ đoạn code sau vào chạy:
 
 ```python
 # 1. Cài đặt các thư viện cần thiết
-!pip install funasr modelscope torch torchaudio yt-dlp gdown
+!pip install funasr modelscope torch torchaudio yt-dlp gdown hanlp ltp jieba
 
 import os
 import json
 import gdown
+import jieba
+import hanlp
+from ltp import LTP
 from funasr import AutoModel
 from google.colab import drive
 
@@ -41,6 +44,12 @@ else:
     print("Running FunASR on CPU...")
     asr_model = AutoModel(model="paraformer-zh", vad_model="fsmn-vad", punc_model="ct-punc", device="cpu")
     asr_res = asr_model.generate(input=VIDEO_FILENAME, batch_size_s=300, sentence_timestamp=True)
+    
+    print("Đang tải các mô hình phân tích ngôn ngữ (HanLP, LTP)...")
+    # Tải LTP
+    ltp_model = LTP() 
+    # Tải HanLP (Multi-task model chuyên sâu)
+    hanlp_model = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH)
 
     print("Đang bóc tách mốc thời gian và chia nhỏ câu...")
     gpu_analysis_data = []
@@ -98,11 +107,40 @@ else:
             })
             
         for idx, s in enumerate(sentences):
+            text = s["chinese"]
+            
+            # 1. Cắt từ bằng Jieba
+            jieba_res = list(jieba.cut(text))
+            
+            # 2. Phân tích cú pháp bằng LTP
+            try:
+                ltp_seg, ltp_hidden = ltp_model.seg([text])
+                ltp_pos = ltp_model.pos(ltp_hidden)
+                ltp_dep = ltp_model.dep(ltp_hidden)
+                ltp_res = {
+                    "seg": ltp_seg[0],
+                    "pos": ltp_pos[0],
+                    "dep": ltp_dep[0]
+                }
+            except Exception as e:
+                ltp_res = {"error": str(e)}
+                
+            # 3. Phân tích đa tác vụ bằng HanLP
+            try:
+                doc = hanlp_model(text)
+                # Chuyển đổi Document thành Dictionary để lưu vào JSON
+                hanlp_res = doc.to_dict() if hasattr(doc, 'to_dict') else str(doc)
+            except Exception as e:
+                hanlp_res = {"error": str(e)}
+                
             gpu_analysis_data.append({
                 "id": idx,
-                "chinese": s["chinese"],
+                "chinese": text,
                 "start": round(s["start"], 3),
-                "end": round(s["end"], 3)
+                "end": round(s["end"], 3),
+                "jieba_analysis": jieba_res,
+                "ltp_analysis": ltp_res,
+                "hanlp_analysis": hanlp_res
             })
 
     # 5. Lưu file vào Google Drive
